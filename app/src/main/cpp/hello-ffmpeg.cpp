@@ -1,5 +1,6 @@
 #include <jni.h>
 #include <string>
+#include "player/Player.h"
 
 #include "util/LogUtil.h"
 
@@ -14,7 +15,7 @@ extern "C" {
 }
 
 extern "C" JNIEXPORT jstring JNICALL
-Java_com_example_helloffmpeg_media_FFMediaPlayerKt_nativeGetFFmpegVersion(
+Java_com_example_helloffmpeg_media_MediaPlayerKt_nativeGetFFmpegVersion(
         JNIEnv* env,
         jclass clazz) {
 
@@ -38,4 +39,51 @@ Java_com_example_helloffmpeg_media_FFMediaPlayerKt_nativeGetFFmpegVersion(
     LOGD("GetFFmpegVersion\n%s", strBuffer);
 
     return env->NewStringUTF(strBuffer);
+}
+
+extern "C" JNIEXPORT jlong JNICALL
+Java_com_example_helloffmpeg_media_MediaPlayer_nativeInit(
+        JNIEnv* env,
+        jobject obj,
+        jstring jurl,
+        jint renderType,
+        jobject surface) {
+    const char *url = env->GetStringUTFChars(jurl, nullptr);
+    Player *player = new Player();
+    player->init(env, obj, const_cast<char *>(url), renderType, surface);
+    env->ReleaseStringUTFChars(jurl, url);
+    return reinterpret_cast<jlong>(player);
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_example_helloffmpeg_media_MediaPlayer_nativePlay(
+        JNIEnv* env,
+        jobject obj,
+        jlong player_handle) {
+    if (player_handle != 0) {
+        Player *player = reinterpret_cast<Player *>(player_handle);
+        player->play();
+    }
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_example_helloffmpeg_media_MediaPlayer_nativeStop(
+        JNIEnv* env,
+        jobject obj,
+        jlong player_handle) {
+    if (player_handle != 0) {
+        Player *player = reinterpret_cast<Player *>(player_handle);
+        player->stop();
+    }
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_example_helloffmpeg_media_MediaPlayer_nativeUnInit(
+        JNIEnv* env,
+        jobject obj,
+        jlong player_handle) {
+    if (player_handle != 0) {
+        Player *player = reinterpret_cast<Player *>(player_handle);
+        player->unInit();
+    }
 }

@@ -3,7 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/work/demo/HelloFFmpeg/app/src/main/res/drawable/ic_aspect_sample.xml" value="0.38229166666666664" />
         <entry key="..\:/work/demo/HelloFFmpeg/app/src/main/res/layout/activity_main.xml" value="0.2957427536231884" />
+        <entry key="..\:/work/demo/HelloFFmpeg/app/src/main/res/layout/activity_native_rend.xml" value="0.2957427536231884" />
+        <entry key="..\:/work/demo/HelloFFmpeg/app/src/main/res/menu/menu_main.xml" value="0.36614583333333334" />
       </map>
     </option>
   </component>
