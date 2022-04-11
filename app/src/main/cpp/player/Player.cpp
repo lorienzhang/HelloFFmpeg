@@ -40,3 +40,10 @@ void Player::seekToPosition(float position) {
         mMediaPlayer->seekToPosition(position);
     }
 }
+
+long Player::getMediaParams(int paramType) {
+    if (mMediaPlayer) {
+        return mMediaPlayer->getMediaParams(paramType);
+    }
+    return 0;
+}

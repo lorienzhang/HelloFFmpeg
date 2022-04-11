@@ -1,21 +1,20 @@
 package com.example.helloffmpeg
 
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.SurfaceHolder
-import android.view.SurfaceView
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
-import com.example.helloffmpeg.media.MediaPlayer
-import com.example.helloffmpeg.media.VIDEO_RENDER_ANWINDOW
+import com.example.helloffmpeg.media.*
 
 private const val TAG = "lorien"
 
-class NativeRendActivity : AppCompatActivity(), SurfaceHolder.Callback {
+class NativeRendActivity : AppCompatActivity(), SurfaceHolder.Callback, EventCallback {
 
     private var videoPath = ""
 
-    private lateinit var surfaceView: SurfaceView
+    private lateinit var surfaceView: SizeAdaptSurfaceView
     private lateinit var seekBar: SeekBar
 
     private var isTouch = false
@@ -27,7 +26,7 @@ class NativeRendActivity : AppCompatActivity(), SurfaceHolder.Callback {
 
         setContentView(R.layout.activity_native_rend)
 
-        videoPath = getExternalFilesDir(null)?.absolutePath + "/lorien/" + "huoying.mp4"
+        videoPath = getExternalFilesDir(null)?.absolutePath + "/lorien/" + "sishen.mp4"
 
         surfaceView = findViewById(R.id.surface_view)
         surfaceView.holder.addCallback(this)
@@ -48,22 +47,55 @@ class NativeRendActivity : AppCompatActivity(), SurfaceHolder.Callback {
         })
     }
 
+    private fun onDecoderReady() {
+        val videoWidth = mediaPlayer?.getMediaParams(MEDIA_PARAM_VIDEO_WIDTH)
+        val videoHeight = mediaPlayer?.getMediaParams(MEDIA_PARAM_VIDEO_HEIGHT)
+        if (videoWidth!! * videoHeight!! != 0L) {
+            surfaceView.setAspectRatio(videoWidth?.toInt(), videoHeight?.toInt())
+        }
+
+        val duration = mediaPlayer?.getMediaParams(MEDIA_PARAM_VIDEO_DURATION)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            seekBar.min = 0
+        }
+        seekBar.max = duration?.toInt()!!
+    }
+
     override fun surfaceCreated(holder: SurfaceHolder) {
         Log.d(TAG, "surfaceCreated")
 
         mediaPlayer = MediaPlayer()
+        mediaPlayer?.addEventCallback(this)
         // 初始化播放器
         mediaPlayer?.init(videoPath, VIDEO_RENDER_ANWINDOW, holder.surface)
     }
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
         Log.d(TAG, "surfaceChanged, width=$width, height=$height")
+        // native会启动线程，执行解码、渲染工作
         mediaPlayer?.play()
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder) {
         Log.d(TAG, "surfaceDestroyed")
+        // 停止播放，释放资源
         mediaPlayer?.stop()
         mediaPlayer?.unInit()
+    }
+
+    override fun onPlayerEvent(msgType: Int, msgValue: Float) {
+        Log.d(TAG, "onPlayerEvent, msgType=$msgType, msgValue=$msgValue")
+        runOnUiThread {
+            when (msgType) {
+                MSG_DECODER_READY -> {
+                    // 调整surfaceview的size
+                    onDecoderReady()
+                }
+
+                MSG_DECODING_TIME -> {
+                    seekBar.progress = msgValue.toInt()
+                }
+            }
+        }
     }
 }

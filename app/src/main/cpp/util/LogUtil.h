@@ -2,6 +2,7 @@
 #define HELLOFFMPEG_LOGUTIL_H
 
 #include "android/log.h"
+#include <sys/time.h>
 
 #define LOG_TAG "LorienNative"
 

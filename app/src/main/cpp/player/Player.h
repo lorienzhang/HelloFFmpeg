@@ -10,14 +10,11 @@ public:
 
     void init(JNIEnv *jniEnv, jobject obj, char *url, int renderType, jobject surface);
     void unInit();
-
     void play();
-
     void pause();
-
     void stop();
-
     void seekToPosition(float position);
+    long getMediaParams(int paramType);
 
 private:
     MediaPlayer *mMediaPlayer = nullptr;

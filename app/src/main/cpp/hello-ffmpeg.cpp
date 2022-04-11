@@ -87,3 +87,17 @@ Java_com_example_helloffmpeg_media_MediaPlayer_nativeUnInit(
         player->unInit();
     }
 }
+
+extern "C" JNIEXPORT jlong JNICALL
+Java_com_example_helloffmpeg_media_MediaPlayer_nativeGetMediaParams(
+        JNIEnv* env,
+        jobject obj,
+        jlong player_handle,
+        jint param_type) {
+    long value = 0;
+    if (player_handle != 0) {
+        Player *player = reinterpret_cast<Player *>(player_handle);
+        value = player->getMediaParams(param_type);
+    }
+    return value;
+}

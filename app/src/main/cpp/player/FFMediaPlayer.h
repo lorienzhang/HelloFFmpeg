@@ -3,6 +3,7 @@
 
 #include "MediaPlayer.h"
 #include "decoder/VideoDecoder.h"
+#include "render/video/VideoRender.h"
 
 class FFMediaPlayer : public MediaPlayer {
 public:
@@ -17,6 +18,7 @@ public:
     virtual void pause();
     virtual void stop();
     virtual void seekToPosition(float position);
+    virtual long getMediaParams(int paramType);
 
 private:
 
@@ -28,6 +30,6 @@ private:
     static void postMessage(void *context, int msgType, float msgCode);
 
     VideoDecoder *mVideoDecoder = nullptr;
-//    VideoRender *mVideoRender = nullptr;
+    VideoRender *mVideoRender = nullptr;
 };
 #endif //HELLOFFMPEG_FFMEDIAPLAYER_H

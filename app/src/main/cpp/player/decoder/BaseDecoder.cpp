@@ -1,5 +1,4 @@
 #include "BaseDecoder.h"
-#include "../../util/LogUtil.h"
 
 void BaseDecoder::start() {
     if (mThread == nullptr) {
@@ -13,11 +12,13 @@ void BaseDecoder::start() {
 }
 
 void BaseDecoder::pause() {
+    LOGD("BaseDecoder::pause");
     std::unique_lock<std::mutex> lock(mMutex);
     mDecoderState = STATE_PAUSE;
 }
 
 void BaseDecoder::stop() {
+    LOGD("BaseDecoder::stop");
     std::unique_lock<std::mutex> lock(mMutex);
     mDecoderState = STATE_STOP;
     mCond.notify_all();
@@ -179,6 +180,7 @@ void BaseDecoder::decodingLoop() {
         }
 
         if (mDecoderState == STATE_STOP) {
+            LOGD("BaseDecoder::decodingLoop mDecoderState is STATE_STOP, exit loop\n");
             break;
         }
 
@@ -197,6 +199,12 @@ void BaseDecoder::decodingLoop() {
     LOGD("BaseDecoder::decodingLoop end\n");
 }
 
+/**
+ * 解码一帧画面，如果成功返回0，失败返回-1
+ * 失败表示可能到文件结尾
+ *
+ * @return
+ */
 int BaseDecoder::decodeOnePacket() {
     LOGD("BaseDecoder::decodeOnePacket mMediaType=%d\n", mMediaType);
     if (mSeekPosition > 0) {
@@ -214,7 +222,7 @@ int BaseDecoder::decodeOnePacket() {
             }
 
             int frameCount = 0;
-            while (avcodec_receive_frame(mAVCodecContext, mFrame)) {
+            while (avcodec_receive_frame(mAVCodecContext, mFrame) == 0) {
                 // 解完一帧，更新时间戳
                 updateTimeStamp();
                 // 音视频同步
@@ -242,6 +250,7 @@ __EXIT:
 
 /**
  * 音视频同步，像系统时间对齐
+ *
  * @return
  */
 long BaseDecoder::AVSync() {
@@ -251,7 +260,7 @@ long BaseDecoder::AVSync() {
     // 距离起播时间的流逝时间
     long elapsedTime = curSysTime - mStartTimeStamp;
     // 一帧对外回调
-    if (mMsgContext && mMsgCallback && mMediaType == AVMEDIA_TYPE_AUDIO) {
+    if (mMsgContext && mMsgCallback && mMediaType == AVMEDIA_TYPE_VIDEO) {
         // 回调当前播放时间戳，转成秒
         mMsgCallback(mMsgContext, MSG_DECODING_TIME, mCurTimeStamp * 1.0f / 1000);
     }
@@ -284,7 +293,7 @@ void BaseDecoder::updateTimeStamp() {
     // ms
     mCurTimeStamp = (int64_t) (
             (mCurTimeStamp * av_q2d(mAVFormatContext->streams[mStreamIndex]->time_base)) * 1000);
-    LOGD("BaseDecoder::updateTimeStamp, mCurTimeStamp=%d\n", mCurTimeStamp);
+    LOGD("BaseDecoder::updateTimeStamp, mCurTimeStamp=%ld\n", mCurTimeStamp);
 }
 
 /**
@@ -293,7 +302,7 @@ void BaseDecoder::updateTimeStamp() {
  * @param decoder
  */
 void BaseDecoder::doAVDecode(BaseDecoder *decoder) {
-    LOGD("BaseDecoder::doAVDecode");
+    LOGD("BaseDecoder::doAVDecode\n");
     do {
         // 1. 初始化FFmpeg解码器
         if (decoder->initFFDecoder() != 0) {
