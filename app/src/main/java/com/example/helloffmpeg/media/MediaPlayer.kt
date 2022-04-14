@@ -33,6 +33,7 @@ class MediaPlayer {
     private external fun nativeStop(playerHandle: Long)
     private external fun nativeUnInit(playerHandle: Long)
     private external fun nativeGetMediaParams(playerHandle: Long, paramType: Int): Long
+    private external fun nativeSeekToPosition(playerHandle: Long, position: Float)
 
     /** native播放器地址 */
     private var nativePlayerHandle = 0L
@@ -63,6 +64,10 @@ class MediaPlayer {
 
     fun getMediaParams(paramType: Int): Long {
         return nativeGetMediaParams(nativePlayerHandle, paramType)
+    }
+
+    fun seekToPosition(position: Float) {
+        return nativeSeekToPosition(nativePlayerHandle, position)
     }
 
     /**

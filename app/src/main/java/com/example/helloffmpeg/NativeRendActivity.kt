@@ -42,8 +42,11 @@ class NativeRendActivity : AppCompatActivity(), SurfaceHolder.Callback, EventCal
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
                 Log.d(TAG, "onStopTrackingTouch called with progress=${seekBar?.progress}")
+                mediaPlayer?.let {
+                    it.seekToPosition(seekBar!!.progress.toFloat())
+                    isTouch = false
+                }
             }
-
         })
     }
 
@@ -93,7 +96,9 @@ class NativeRendActivity : AppCompatActivity(), SurfaceHolder.Callback, EventCal
                 }
 
                 MSG_DECODING_TIME -> {
-                    seekBar.progress = msgValue.toInt()
+                    if (!isTouch) {
+                        seekBar.progress = msgValue.toInt()
+                    }
                 }
             }
         }

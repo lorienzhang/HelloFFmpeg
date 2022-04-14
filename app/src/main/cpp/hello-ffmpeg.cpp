@@ -101,3 +101,15 @@ Java_com_example_helloffmpeg_media_MediaPlayer_nativeGetMediaParams(
     }
     return value;
 }
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_example_helloffmpeg_media_MediaPlayer_nativeSeekToPosition(
+        JNIEnv* env,
+        jobject obj,
+        jlong player_handle,
+        jfloat position) {
+    if (player_handle != 0) {
+        Player *player = reinterpret_cast<Player *>(player_handle);
+        player->seekToPosition(position);
+    }
+}

@@ -108,7 +108,7 @@ private:
     char mUrl[MAX_PATH] = {0};
     // 当前播放时间
     long mCurTimeStamp = 0;
-    // 起播时间
+    // 起播时间，包括真实起播时间 or seek之后对应的起播时间
     long mStartTimeStamp = -1;
     // 线程指针
     thread *mThread = nullptr;

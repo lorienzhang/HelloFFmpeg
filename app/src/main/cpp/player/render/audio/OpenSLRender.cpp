@@ -183,6 +183,7 @@ int OpenSLRender::createAudioPlayer() {
             break;
         }
 
+        // 当OpenSL ES需要数据进行播放的时候会回调该函数，我们要在回调函数中填充PCM数据
         result = (*mBufferQueue)->RegisterCallback(mBufferQueue, audioPlayerCallback, this);
         if (result != SL_RESULT_SUCCESS) {
             LOGD("OpenSLRender::createAudioPlayer RegisterCallback fail. result=%d\n", result);

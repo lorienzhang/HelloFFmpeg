@@ -24,8 +24,17 @@ void BaseDecoder::stop() {
     mCond.notify_all();
 }
 
+/**
+ * called by ui thread
+ *
+ * @param position
+ */
 void BaseDecoder::seekToPosition(float position) {
-
+    LOGD("BaseDecoder::seekToPosition position=%f\n", position);
+    std::unique_lock<std::mutex> lock(mMutex);
+    mSeekPosition = position;
+    mDecoderState = STATE_DECODING;
+    mCond.notify_all();
 }
 
 float BaseDecoder::getCurrentPosition() {
@@ -208,7 +217,24 @@ void BaseDecoder::decodingLoop() {
 int BaseDecoder::decodeOnePacket() {
     LOGD("BaseDecoder::decodeOnePacket mMediaType=%d\n", mMediaType);
     if (mSeekPosition > 0) {
-        // todo: seek
+        // seek to frame
+        int64_t seek_target = static_cast<int64_t>(mSeekPosition * 1000000); // us
+        int64_t seek_min = INT64_MIN;
+        int64_t seek_max = INT64_MAX;
+        // 调用ffmpeg进行seek
+        int seek_ret = avformat_seek_file(mAVFormatContext, -1, seek_min, seek_target, seek_max, 0);
+        if (seek_ret < 0) {
+            mSeekSuccess = false;
+            LOGD("BaseDecoder::decodeOnePacket error while seeking mMediaType=%d\n", mMediaType);
+        } else {
+            if (mStreamIndex != -1) {
+                avcodec_flush_buffers(mAVCodecContext);
+            }
+            // 清空音频帧队列缓存
+            clearCache();
+            mSeekSuccess = true;
+            LOGD("BaseDecoder::decodeOnePacket seekFrame pos=%f, mMediaType=%d\n", mSeekPosition, mMediaType);
+        }
     }
 
     int result = av_read_frame(mAVFormatContext, mAVPacket);
@@ -294,6 +320,14 @@ void BaseDecoder::updateTimeStamp() {
     mCurTimeStamp = (int64_t) (
             (mCurTimeStamp * av_q2d(mAVFormatContext->streams[mStreamIndex]->time_base)) * 1000);
     LOGD("BaseDecoder::updateTimeStamp, mCurTimeStamp=%ld\n", mCurTimeStamp);
+
+    if (mSeekPosition > 0 && mSeekSuccess) {
+        // seek之后，重新计算启播时间
+        mStartTimeStamp = getSysCurrentTime() - mCurTimeStamp;
+        mSeekPosition = 0;
+        mSeekSuccess = false;
+    }
+
 }
 
 /**
@@ -315,5 +349,6 @@ void BaseDecoder::doAVDecode(BaseDecoder *decoder) {
     } while (false);
 
     decoder->unInitDecoder();
+    // 通知子类，解码结束。做资源销毁工作
     decoder->onDecoderDone();
 }
