@@ -15,6 +15,7 @@ file(GLOB src-files
         ${CMAKE_SOURCE_DIR}/player/*.cpp
         ${CMAKE_SOURCE_DIR}/player/decoder/*.cpp
         ${CMAKE_SOURCE_DIR}/player/render/video/*.cpp
+        ${CMAKE_SOURCE_DIR}/player/render/audio/*.cpp
         )
 
 add_library( # Sets the name of the library.
@@ -44,4 +45,5 @@ target_link_libraries( # Specifies the target library.
         # included in the NDK.
         ${log-lib}
         android
+        OpenSLES
         ffmpeg)

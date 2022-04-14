@@ -260,7 +260,7 @@ long BaseDecoder::AVSync() {
     // 距离起播时间的流逝时间
     long elapsedTime = curSysTime - mStartTimeStamp;
     // 一帧对外回调
-    if (mMsgContext && mMsgCallback && mMediaType == AVMEDIA_TYPE_VIDEO) {
+    if (mMsgContext && mMsgCallback && mMediaType == AVMEDIA_TYPE_AUDIO) {
         // 回调当前播放时间戳，转成秒
         mMsgCallback(mMsgContext, MSG_DECODING_TIME, mCurTimeStamp * 1.0f / 1000);
     }

@@ -26,7 +26,7 @@ class NativeRendActivity : AppCompatActivity(), SurfaceHolder.Callback, EventCal
 
         setContentView(R.layout.activity_native_rend)
 
-        videoPath = getExternalFilesDir(null)?.absolutePath + "/lorien/" + "sishen.mp4"
+        videoPath = getExternalFilesDir(null)?.absolutePath + "/lorien/" + "haizei.mp4"
 
         surfaceView = findViewById(R.id.surface_view)
         surfaceView.holder.addCallback(this)
@@ -51,7 +51,7 @@ class NativeRendActivity : AppCompatActivity(), SurfaceHolder.Callback, EventCal
         val videoWidth = mediaPlayer?.getMediaParams(MEDIA_PARAM_VIDEO_WIDTH)
         val videoHeight = mediaPlayer?.getMediaParams(MEDIA_PARAM_VIDEO_HEIGHT)
         if (videoWidth!! * videoHeight!! != 0L) {
-            surfaceView.setAspectRatio(videoWidth?.toInt(), videoHeight?.toInt())
+            surfaceView.setAspectRatio(videoWidth.toInt(), videoHeight.toInt())
         }
 
         val duration = mediaPlayer?.getMediaParams(MEDIA_PARAM_VIDEO_DURATION)

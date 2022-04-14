@@ -2,6 +2,7 @@
 #define HELLOFFMPEG_FFMEDIAPLAYER_H
 
 #include "MediaPlayer.h"
+#include "decoder/AudioDecoder.h"
 #include "decoder/VideoDecoder.h"
 #include "render/video/VideoRender.h"
 
@@ -31,5 +32,8 @@ private:
 
     VideoDecoder *mVideoDecoder = nullptr;
     VideoRender *mVideoRender = nullptr;
+
+    AudioDecoder *mAudioDecoder = nullptr;
+    AudioRender *mAudioRender = nullptr;
 };
 #endif //HELLOFFMPEG_FFMEDIAPLAYER_H

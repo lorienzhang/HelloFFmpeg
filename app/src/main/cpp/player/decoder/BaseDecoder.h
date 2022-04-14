@@ -49,6 +49,7 @@ public:
     }
     virtual void seekToPosition(float position);
     virtual float getCurrentPosition();
+    virtual void clearCache() {};
     virtual void setMessageCallback(void *context, MessageCallback callback) {
         mMsgContext = context;
         mMsgCallback = callback;

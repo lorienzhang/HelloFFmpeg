@@ -10,6 +10,9 @@ void FFMediaPlayer::init(JNIEnv *env, jobject obj, char *url, int renderType, jo
 
     // 构造视频解码器
     mVideoDecoder = new VideoDecoder(url);
+    // 构造音频解码器
+    mAudioDecoder = new AudioDecoder(url);
+
     if (renderType == VIDEO_RENDER_ANWINDOW) {
         // 构造视频渲染
         mVideoRender = new NativeRender(env, surface);
@@ -17,7 +20,11 @@ void FFMediaPlayer::init(JNIEnv *env, jobject obj, char *url, int renderType, jo
         mVideoDecoder->setVideoRender(mVideoRender);
     }
 
+    mAudioRender = new OpenSLRender();
+    mAudioDecoder->setAudioRender(mAudioRender);
+
     mVideoDecoder->setMessageCallback(this, postMessage);
+    mAudioDecoder->setMessageCallback(this, postMessage);
 }
 
 void FFMediaPlayer::unInit() {
@@ -32,6 +39,16 @@ void FFMediaPlayer::unInit() {
         mVideoRender = nullptr;
     }
 
+    if (mAudioDecoder) {
+        delete mAudioDecoder;
+        mAudioDecoder = nullptr;
+    }
+
+    if (mAudioRender) {
+        delete mAudioRender;
+        mAudioRender = nullptr;
+    }
+
     bool isAttach = false;
     getJNIEnv(&isAttach)->DeleteGlobalRef(mJavaObj);
     if (isAttach) {
@@ -42,7 +59,13 @@ void FFMediaPlayer::unInit() {
 void FFMediaPlayer::play() {
     LOGD("FFMediaPlayer::play");
     if (mVideoDecoder) {
+        // 第一次start会开线程
         mVideoDecoder->start();
+    }
+
+    if (mAudioDecoder) {
+        // 第一次start会开线程
+        mAudioDecoder->start();
     }
 }
 
@@ -50,6 +73,10 @@ void FFMediaPlayer::pause() {
     LOGD("FFMediaPlayer::pause");
     if (mVideoDecoder) {
         mVideoDecoder->pause();
+    }
+
+    if (mAudioDecoder) {
+        mAudioDecoder->pause();
     }
 }
 
@@ -59,12 +86,20 @@ void FFMediaPlayer::stop() {
         // stop解码器
         mVideoDecoder->stop();
     }
+
+    if (mAudioDecoder) {
+        mAudioDecoder->stop();
+    }
 }
 
 void FFMediaPlayer::seekToPosition(float position) {
     LOGD("FFMediaPlayer::seekToPosition");
     if (mVideoDecoder) {
         mVideoDecoder->seekToPosition(position);
+    }
+
+    if (mAudioDecoder) {
+        mAudioDecoder->seekToPosition(position);
     }
 }
 
