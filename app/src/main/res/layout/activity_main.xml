@@ -27,6 +27,14 @@
             android:onClick="nativeRenderPlayer"
             android:text="ANativeWindow player" />
 
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:onClick="nativeRenderTexturePlayer"
+            android:text="ANativeWindow Texture player" />
+
     </LinearLayout>
 
 </ScrollView>

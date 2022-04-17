@@ -20,7 +20,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".NativeRendActivity"/>
+        <activity android:name=".NativeRenderActivity"/>
+        <activity android:name=".NativeRenderTextureActivity"/>
     </application>
 
 </manifest>

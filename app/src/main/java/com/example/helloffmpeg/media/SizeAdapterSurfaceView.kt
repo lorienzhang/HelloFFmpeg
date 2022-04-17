@@ -7,7 +7,7 @@ import android.view.SurfaceView
 
 const val TAG = "lorien"
 
-class SizeAdaptSurfaceView(context: Context, attrs: AttributeSet?) : SurfaceView(context, attrs) {
+class SizeAdapterSurfaceView(context: Context, attrs: AttributeSet?) : SurfaceView(context, attrs) {
     constructor(context: Context) : this(context, null)
 
     private var mAspectWidth = 0

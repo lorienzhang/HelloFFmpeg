@@ -112,6 +112,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun nativeRenderPlayer(view: View) {
-        startActivity(Intent(this, NativeRendActivity::class.java))
+        startActivity(Intent(this, NativeRenderActivity::class.java))
+    }
+
+    fun nativeRenderTexturePlayer(view: View) {
+        startActivity(Intent(this, NativeRenderTextureActivity::class.java))
     }
 }

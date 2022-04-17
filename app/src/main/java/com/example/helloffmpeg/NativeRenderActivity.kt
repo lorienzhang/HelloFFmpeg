@@ -10,11 +10,11 @@ import com.example.helloffmpeg.media.*
 
 private const val TAG = "lorien"
 
-class NativeRendActivity : AppCompatActivity(), SurfaceHolder.Callback, EventCallback {
+class NativeRenderActivity : AppCompatActivity(), SurfaceHolder.Callback, EventCallback {
 
     private var videoPath = ""
 
-    private lateinit var surfaceView: SizeAdaptSurfaceView
+    private lateinit var surfaceView: SizeAdapterSurfaceView
     private lateinit var seekBar: SeekBar
 
     private var isTouch = false
@@ -24,7 +24,7 @@ class NativeRendActivity : AppCompatActivity(), SurfaceHolder.Callback, EventCal
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_native_rend)
+        setContentView(R.layout.activity_native_render)
 
         videoPath = getExternalFilesDir(null)?.absolutePath + "/lorien/" + "haizei.mp4"
 
